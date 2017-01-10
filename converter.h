@@ -9,8 +9,10 @@ using namespace std;
 
 struct vector
 {
+	int length;
 	double values[MAX_ARRAY_LENGTH];
 };
+
 
 struct node
 {
@@ -28,21 +30,26 @@ struct list
 
 
 //temperature
-#define CtoK 273,15;
+#define CtoK 273,15
 
 //length
-#define oneMeterIninches 39.3701;
-#define oneMeterInFeet 3.28084;
-#define oneMeterInMiles 0.000621371;
-#define oneMeterInYards 1.09361;
-#define oneMeterInNauticalMiles 0.000539957;
+#define oneMeterIninches 39.3701
+#define oneMeterInFeet 3.28084
+#define oneMeterInMiles 0.000621371
+#define oneMeterInYards 1.09361
+#define oneMeterInNauticalMiles 0.000539957
 
 //area
-#define oneSquareMeterInSquareInches 1550;
-#define oneSquareMeterInSquareFeet 10.7639;
-#define oneSquareKilometerInSquareMiles 0.386102;
-#define oneSquareMeterInHectares 0.0001;
+#define oneSquareMeterInSquareInches 1550
+#define oneSquareMeterInSquareFeet 10.7639
+#define oneSquareKilometerInSquareMiles 0.386102
+#define oneSquareMeterInHectares 0.0001
 
 //mass
-#define oneLbinGrams 453.592;
-#define oneOzinGrams 28.3495;
+#define oneLbinGrams 453.592
+#define oneOzinGrams 28.3495
+
+//time
+#define largeUnits 6
+#define middleUnits 4
+#define smallUnits 4

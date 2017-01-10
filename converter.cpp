@@ -1,12 +1,17 @@
 ﻿#include "converter.h"
 
-int noOfCategories, noOfAreaOptions, noOfLengthOptions, noTimeOptions, noUnitsMassMetric, noUnitsMassSpecial;
+int noOfCategories, noTimeOptions, noUnitsMassMetric, noUnitsMassSpecial;
+int noOfAreaOptions, noUnitsAreaMetric;
+int noOfLengthOptions, noUnitsLengthMetric;
+
 
 //general
 void intro()
 {
+	system("Color A");
 	cout << "~~~WELCOME~~~" << endl;
 	cout << "~~~UNIT CONVERTER~~~" << endl;
+	system("Color");
 }
 void unitCategories()
 {
@@ -104,6 +109,7 @@ char readOutputUnitLetter()
 //1 AREA - done
 void displayAreaOptions()
 {
+	//noUnitsAreaMetric
 	cout << "1. square kilometers " << endl;
 	cout << "2. square hectometers " << endl;
 	cout << "3. square decameters " << endl;
@@ -111,10 +117,12 @@ void displayAreaOptions()
 	cout << "5. square decimeters " << endl;
 	cout << "6. square centimeters " << endl;
 	cout << "7. square milimeters " << endl;
+	//Special Units
 	cout << "8. square inches " << endl;
 	cout << "9. square feet " << endl;
 	cout << "10. square miles " << endl;
 	cout << "11. hectares " << endl;
+	noUnitsAreaMetric = 7;
 	noOfAreaOptions = 11;
 }
 void areaInputUnitCorespondence(int inputUnit)
@@ -155,6 +163,7 @@ double areaConversion(int inputUnit, int outputUnit, double inputValue)
 {
 	vector areaConversionTable;
 	int i, inputIndex, outputIndex;
+	double valueInSquareMeters, valueInSquareKm;
 
 	for (int k = 0; k < MAX_ARRAY_LENGTH; k++)
 	{
@@ -165,9 +174,9 @@ double areaConversion(int inputUnit, int outputUnit, double inputValue)
 	outputIndex = determineOutputIndex(outputUnit);
 	areaConversionTable.values[inputIndex] = inputValue;
 
-	if (inputIndex < 7)
+	if (inputIndex < noUnitsAreaMetric)
 	{
-		for (i = 0; i < 7; i++)
+		for (i = 0; i < noUnitsAreaMetric; i++)
 		{
 			if (i < inputIndex)
 			{
@@ -178,13 +187,15 @@ double areaConversion(int inputUnit, int outputUnit, double inputValue)
 				areaConversionTable.values[i] = inputValue * pow(pow(10, i - inputIndex), 2);
 			}
 		}
+		valueInSquareMeters = areaConversionTable.values[3];
+		valueInSquareKm = areaConversionTable.values[0];
 		//  to square inches, feet, miles, hectares
 		switch (outputIndex)
 		{
-		case 7: areaConversionTable.values[outputIndex] = areaConversionTable.values[3] * oneSquareMeterInSquareInches; break;
-		case 8: areaConversionTable.values[outputIndex] = areaConversionTable.values[3] * oneSquareMeterInSquareFeet; break;
-		case 9: areaConversionTable.values[outputIndex] = areaConversionTable.values[0] * oneSquareKilometerInSquareMiles; break;
-		case 10: areaConversionTable.values[outputIndex] = areaConversionTable.values[3] * oneSquareMeterInHectares; break;
+		case 7: areaConversionTable.values[outputIndex] = valueInSquareMeters * oneSquareMeterInSquareInches; break;
+		case 8: areaConversionTable.values[outputIndex] = valueInSquareMeters * oneSquareMeterInSquareFeet; break;
+		case 9: areaConversionTable.values[outputIndex] = valueInSquareKm * oneSquareKilometerInSquareMiles; break;
+		case 10: areaConversionTable.values[outputIndex] = valueInSquareMeters * oneSquareMeterInHectares; break;
 		}
 	}
 	else //  input square inches, feet, miles, hectares
@@ -223,7 +234,7 @@ double areaConversion(int inputUnit, int outputUnit, double inputValue)
 
 //2. LENGTH - done
 void displayLengthOptions()
-{
+{   //noUnitsLengthMetric
 	cout << "1. km (kilometers) " << endl;
 	cout << "2. hm (hectometers)" << endl;
 	cout << "3. dam (decameters) " << endl;
@@ -231,11 +242,15 @@ void displayLengthOptions()
 	cout << "5. dm (decimeters) " << endl;
 	cout << "6. cm (centimeters) " << endl;
 	cout << "7. mm (milimeters) " << endl;
+	//special units
 	cout << "8. in (inches) " << endl;
 	cout << "9. ft (feet) " << endl;
 	cout << "10. mi (miles) " << endl;
 	cout << "11. yd (yards) " << endl;
 	cout << "12. nmi (nautical mile) " << endl;
+	noOfLengthOptions = 12;
+	noUnitsLengthMetric = 7;
+
 }
 void lengthInputUnitCorespondence(int inputUnit)
 {
@@ -274,7 +289,7 @@ void lengthOutputUnitCorespondence(int outputUnit)
 double lengthConversion(int inputUnit, int outputUnit, double inputValue)
 {
 	vector lengthConversionTable;
-	int i, inputIndex, outputIndex;
+	int i, inputIndex, outputIndex, valueInMeters;
 
 	for (int k = 0; k < MAX_ARRAY_LENGTH; k++)
 	{
@@ -286,9 +301,9 @@ double lengthConversion(int inputUnit, int outputUnit, double inputValue)
 	lengthConversionTable.values[inputIndex] = inputValue;
 
 	// km --> mm
-	if (inputIndex < 7)
+	if (inputIndex < noUnitsLengthMetric)
 	{
-		for (i = 0; i < 7; i++)
+		for (i = 0; i < noUnitsLengthMetric; i++)
 		{
 			if (i < inputIndex)
 			{
@@ -299,15 +314,16 @@ double lengthConversion(int inputUnit, int outputUnit, double inputValue)
 				lengthConversionTable.values[i] = inputValue * pow(10, i - inputIndex);
 			}
 		}
+		valueInMeters = lengthConversionTable.values[3];
 
 		// to inches, feet, miles, yards
 		switch (outputIndex)
 		{
-		case 7: lengthConversionTable.values[outputIndex] = lengthConversionTable.values[3] * oneMeterIninches; break;
-		case 8: lengthConversionTable.values[outputIndex] = lengthConversionTable.values[3] * oneMeterInFeet; break;
-		case 9: lengthConversionTable.values[outputIndex] = lengthConversionTable.values[3] * oneMeterInMiles; break;
-		case 10: lengthConversionTable.values[outputIndex] = lengthConversionTable.values[3] * oneMeterInYards; break;
-		case 11: lengthConversionTable.values[outputIndex] = lengthConversionTable.values[3] * oneMeterInNauticalMiles; break;
+		case 7: lengthConversionTable.values[outputIndex] = valueInMeters * oneMeterIninches; break;
+		case 8: lengthConversionTable.values[outputIndex] = valueInMeters * oneMeterInFeet; break;
+		case 9: lengthConversionTable.values[outputIndex] = valueInMeters * oneMeterInMiles; break;
+		case 10: lengthConversionTable.values[outputIndex] = valueInMeters * oneMeterInYards; break;
+		case 11: lengthConversionTable.values[outputIndex] = valueInMeters * oneMeterInNauticalMiles; break;
 		}
 	}
 	else // input: inches, feet, miles, yards
@@ -320,7 +336,7 @@ double lengthConversion(int inputUnit, int outputUnit, double inputValue)
 		case 10: lengthConversionTable.values[3] = inputValue / oneMeterInYards; break;
 		case 11: lengthConversionTable.values[3] = inputValue / oneMeterInNauticalMiles; break;
 		}
-		for (i = 0; i < 7; i++)
+		for (i = 0; i < noUnitsLengthMetric; i++)
 		{
 			if (i < 3)
 			{
@@ -435,7 +451,6 @@ int determineVolumeOutputIndex(int outputUnit)
 	}
 	return VolumeOutputIndex;
 }
-
 double volumeConversion(int inputUnit, int outputUnit, double inputValue)
 {
 	vector volumeConversionTable;
@@ -499,68 +514,150 @@ double volumeConversion(int inputUnit, int outputUnit, double inputValue)
 //4. TIME
 void displayTimeOptions()
 {
-	cout << "1. nanosecond " << endl;
-	cout << "2. microsecond " << endl;
-	cout << "3. milisecond " << endl;
-	cout << "4. second " << endl;
-	cout << "5. minute " << endl;
-	cout << "6. hour " << endl;
-	cout << "7. day " << endl;
-	cout << "8. week " << endl;
-	cout << "9. month " << endl;
-	cout << "10. year " << endl;
-	cout << "11. decade " << endl;
-	cout << "12. century " << endl;
+	cout << "1. century " << endl; 	//largeUnits
+	cout << "2. decade " << endl;
+	cout << "3. year " << endl; 
+	cout << "4. month " << endl;
+	cout << "5. week " << endl;
+	cout << "6. day " << endl; // middleUnits
+	cout << "7. hour " << endl;
+	cout << "8. minute " << endl; 
+	cout << "9. second " << endl; //smallUnits
+	cout << "10. milisecond " << endl;
+	cout << "11. microsecond " << endl; 
+	cout << "12. nanosecond " << endl; 
 	noTimeOptions = 12;
 }
 void timeInputUnitCorespondence(int inputUnit)
 {
 	switch (inputUnit)
 	{
-	case 1: cout << "nanosecond(s)"; break;
-	case 2: cout << "microsecond(s)"; break;
-	case 3: cout << "milisecond(s)"; break;
-	case 4: cout << "second(s)"; break;
-	case 5: cout << "minute(s)"; break;
-	case 6: cout << "hour(s)"; break;
-	case 7: cout << "day(s)"; break;
-	case 8: cout << "week(s)"; break;
-	case 9: cout << "month(s)"; break;
-	case 10: cout << "year(s)"; break;
-	case 11: cout << "decade(s)"; break;
-	case 12: cout << "century(s)"; break;
+	case 1: cout << "century(s)"; break;
+	case 2: cout << "decade(s)"; break;
+	case 3: cout << "year(s)"; break;
+	case 4: cout << "month(s)"; break;
+	case 5: cout << "week(s)"; break;
+	case 6: cout << "day(s)"; break;
+	case 7: cout << "hour(s)"; break;
+	case 8: cout << "minute(s)"; break;
+	case 9: cout << "second(s)"; break;
+	case 10: cout << "milisecond(s)"; break;
+	case 11: cout << "microsecond(s)"; break;
+	case 12: cout << "nanosecond(s)"; break;
 	}
 }
 void timeOutputUnitCorespondence(int outputUnit)
 {
 	switch (outputUnit)
 	{
-	case 1: cout << "nanosecond(s)"; break;
-	case 2: cout << "microsecond(s)"; break;
-	case 3: cout << "milisecond(s)"; break;
-	case 4: cout << "second(s)"; break;
-	case 5: cout << "minute(s)"; break;
-	case 6: cout << "hour(s)"; break;
-	case 7: cout << "day(s)"; break;
-	case 8: cout << "week(s)"; break;
-	case 9: cout << "month(s)"; break;
-	case 10: cout << "year(s)"; break;
-	case 11: cout << "decade(s)"; break;
-	case 12: cout << "century(s)"; break;
+	case 1: cout << "century(s)"; break;
+	case 2: cout << "decade(s)"; break;
+	case 3: cout << "year(s)"; break;
+	case 4: cout << "month(s)"; break;
+	case 5: cout << "week(s)"; break;
+	case 6: cout << "day(s)"; break;
+	case 7: cout << "hour(s)"; break;
+	case 8: cout << "minute(s)"; break;
+	case 9: cout << "second(s)"; break;
+	case 10: cout << "milisecond(s)"; break;
+	case 11: cout << "microsecond(s)"; break;
+	case 12: cout << "nanosecond(s)"; break;
 	}
 }
-/*
+
+int productFirstXElementsArray(int vec[MAX_ARRAY_LENGTH], int x)
+{
+	int product = 1;
+	for (int i = 0; i < x; i++)
+	{
+		product *= vec[i];
+	}
+	return product;
+}
+
 double timeConversion(int inputUnit, int outputUnit, double inputValue)
 {
+	int i, j, k;
+	//large = century -> day exclusiv; middle = day -> second; small = second -> ns
+	int conversionTableLarge[] = { 1, 10, 10, 12, 4, 7 };
+	int conversionTableMiddle[] = {1, 24, 60, 60};
+	int conversionTableSmall[] = {1, 1000, 1000, 1000};
 
+	vector large, middle, small;
+	large.length = largeUnits;
+	middle.length = middleUnits;
+	small.length = smallUnits;
+	
+	switch (inputUnit)		
+	{
+	case 1: large.values[0] = inputUnit; break;
+	case 2: large.values[0] = inputUnit / productFirstXElementsArray(conversionTableLarge, 2); break;
+	case 3: large.values[0] = inputUnit / productFirstXElementsArray(conversionTableLarge, 3); break;
+	case 4: large.values[0] = inputUnit / productFirstXElementsArray(conversionTableLarge, 4); break;
+	case 5: large.values[0] = inputUnit / productFirstXElementsArray(conversionTableLarge, 5); break;
+	case 6: large.values[0] = inputUnit / productFirstXElementsArray(conversionTableLarge, 6); break; 
+	case 7: { middle.values[0] = inputUnit / productFirstXElementsArray(conversionTableMiddle, 2);
+		large.values[2] = middle.values[0] / 365;
+		large.values[0] = large.values[2] / 100;
+		break; }
+	case 8: {middle.values[0] = inputUnit / productFirstXElementsArray(conversionTableMiddle, 3);
+		large.values[2] = middle.values[0] / 365;
+		large.values[0] = large.values[2] / 100;
+		break; }
+	case 9: {middle.values[0] = inputUnit / productFirstXElementsArray(conversionTableMiddle, 4); 
+		large.values[2] = middle.values[0] / 365;
+		large.values[0] = large.values[2] / 100;
+		break; }
+	case 10: {small.values[0] = inputUnit / productFirstXElementsArray(conversionTableSmall, 2); 
+		large.values[large.length-1] = small.values[0]/(24*60*60);
+		large.values[0] = large.values[large.length - 1] / 365;
+		break; }
+	case 11: {small.values[0] = inputUnit / productFirstXElementsArray(conversionTableSmall, 2); 
+		large.values[large.length - 1] = small.values[0] / (24 * 60 * 60);
+		large.values[0] = large.values[large.length - 1] / 365;
+		break; }
+	case 12: {small.values[0] = inputUnit / productFirstXElementsArray(conversionTableSmall, 2); 
+		large.values[large.length - 1] = small.values[0] / (24 * 60 * 60);
+		large.values[0] = large.values[large.length - 1] / 365;
+		break; }
+	}
+	
+	for (i = 1; i < large.length; i++)
+	{
+		large.values[i] = large.values[i - 1] * conversionTableLarge[i];
+	} // here, it is considered that all months have 30 days
+	
+	middle.values[0] = large.values[2] * 365; // correct no of days
+	for (j = 1; j < middle.length; j++)
+	{
+		middle.values[j] = middle.values[j - 1] * conversionTableMiddle[j];
+	}
 
+	small.values[0] = middle.values[middle.length - 1]; // no seconds
+	for (k = 1; k < small.length; k++)
+	{
+		small.values[k] = small.values[k - 1] * conversionTableSmall[k];
+	}
 
-
-
+	switch (outputUnit)
+	{
+	case 1: return large.values[0]; break;
+	case 2: return large.values[1]; break;
+	case 3: return large.values[2]; break;
+	case 4: return large.values[3]; break;
+	case 5: return large.values[4]; break;
+	case 6: return middle.values[0]; break;
+	case 7: return middle.values[1]; break;
+	case 8: return middle.values[2]; break;
+	case 9: return middle.values[3]; break; 
+	case 10: return small.values[1]; break;
+	case 11: return small.values[2]; break;
+	case 12: return small.values[3]; break;
+	}
 }
-*/
 
-//5 TEMPERATURE
+
+//5 TEMPERATURE -done
 void displayTemperatureOptions()
 {
 	cout << "C. Celsius " << endl;
@@ -702,6 +799,72 @@ double massConversion(int inputUnit, int outputUnit, double inputValue)
 }
 
 
+//7. ENERGY
+void displayEnergyOptions()
+{
+	cout << "1. Joule " << endl;
+	cout << "2. Kilojoule " << endl;
+	cout << "3. Gram Calorie " << endl;
+	cout << "4. Kilo calorie " << endl;
+	cout << "5. Watt hour " << endl;
+	cout << "6. Kilowatt hour " << endl;
+	cout << "7. Electronvolt" << endl;
+	cout << "8. British thermal unit " << endl;
+	cout << "9. US Therm " << endl;
+	cout << "10. Foot pound " << endl;
+}
+
+// 8. PRESSURE
+void displayPressureOptions()
+{
+	cout << "1. atm (atmosphere) " << endl;
+	cout << "2. bar " << endl;
+	cout << "3. Pascal " << endl;
+	cout << "4. Pound-force per square inch (PSI) " << endl;
+	cout << "5. Torr " << endl;
+	cout << "6. N/mm2 " << endl;
+	cout << "7. mmHg" << endl;
+	cout << "8. mmH2O" << endl;
+}
+
+//9. DENSITY
+void displayDensityOptions()
+{
+
+}
+
+//10.SPEED
+void displaySpeedOptions()
+{
+	cout << "1. km/s " << endl;
+	cout << "2. km/h " << endl;
+	cout << "3. m/s " << endl;
+	cout << "4. m/min " << endl;
+	cout << "5. mps " << endl;
+	cout << "6. mph " << endl;
+	cout << "7. foot/s " << endl;
+	cout << "8. foot/min " << endl;
+	//joggers
+	cout << "9. min/km " << endl;
+	cout << "10. s/100m " << endl;
+
+}
+
+//11. FUEL CONSUMPTION
+void displayFuelOptions()
+{//metric
+	cout << "1. l/100km " << endl;
+	cout << "2. km/l " << endl;
+	//us
+	cout << "3. mpg (miles per gallon- US) " << endl;
+	cout << "4. gal(US)/100 mi " << endl;
+	//uk
+	cout << "5. mpg (miles per gallon - UK) " << endl;
+	cout << "6. gal(UK)/100 mi " << endl;
+	cout << "7. mi/l " << endl;
+	cout << "7. l/100mi " << endl;
+}
+
 
 int main()
 {
@@ -770,7 +933,17 @@ int main()
 		//time
 		if (unitCategory == 4)
 		{
-
+			displayTimeOptions();
+			inputUnit = readInputUnit();
+			outputUnit = readOutputUnit();
+			inputValue = readInputValue();
+			cout << inputValue;
+			cout << " ";
+			timeInputUnitCorespondence(inputUnit);
+			cout << " is " << timeConversion(inputUnit, outputUnit, inputValue);
+			cout << " ";
+			timeOutputUnitCorespondence(outputUnit);
+			cout << endl;
 		}
 
 		//temperature
@@ -797,6 +970,36 @@ int main()
 			cout << " ";
 			massOutputUnitCorespondence(outputUnit);
 			cout << endl;
+		}
+
+		//energy
+		if (unitCategory == 7)
+		{
+
+		}
+
+		//pressure
+		if (unitCategory == 8)
+		{
+
+		}
+
+		//density
+		if (unitCategory == 9)
+		{
+
+		}
+
+		//speed
+		if (unitCategory == 10)
+		{
+
+		}
+
+		//fuel cons
+		if (unitCategory == 11)
+		{
+
 		}
 
 
