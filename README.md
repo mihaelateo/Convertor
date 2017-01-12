@@ -1,5 +1,5 @@
 # Convertor
-C++ unit converter for the following:
+C++ unit converter for the following unit categories:
 + length
 + surface
 + volume
@@ -11,4 +11,3 @@ C++ unit converter for the following:
 + atmospheric pressure (bar to psi)
 + density
 + fuel consumption (l/100km to miles/galon, km /l)
-+ () expression evaluation and conversion
