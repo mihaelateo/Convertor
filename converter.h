@@ -23,7 +23,6 @@ struct matrix
 };
 
 
-
 //temperature
 #define CtoK 273,15
 

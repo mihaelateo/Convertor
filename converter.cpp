@@ -1,32 +1,38 @@
 ﻿#include "converter.h"
 
+int unitCategory, noOfOptionsInTheCategory;
 int noOfCategories, noTimeOptions, noUnitsMassMetric, noUnitsMassSpecial, noOfOptions;
 int noOfAreaOptions, noUnitsAreaMetric;
 int noOfLengthOptions, noUnitsLengthMetric;
 
 //general
-void setColor(int color) 
+void setColor(int color)
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 }
-void intro()
+void setFont()
 {
 	CONSOLE_FONT_INFOEX cfi;
 	cfi.cbSize = sizeof(cfi);
 	cfi.nFont = 0;
 	cfi.dwFontSize.X = 0;
-	cfi.dwFontSize.Y = 16;
+	cfi.dwFontSize.Y = 14;
 	cfi.FontFamily = FF_MODERN;
 	cfi.FontWeight = FW_BOLD;
 	wcscpy_s(cfi.FaceName, L"Tahoma");
 	SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &cfi);
-	
-	setColor(2);
-	cout << "\t ~~~ UNIT CONVERTER~~~" << endl;
+}
+void intro()
+{
+	setFont();
+	setColor(14);
+	cout << endl;
+	cout << "\t ~~~ UNIT CONVERTER ~~~ " << endl;
 	cout << endl;
 }
-void unitCategories()
+void showUnitCategories()
 {
+	setColor(2);
 	cout << " Please select your option from the following: " << endl;
 	cout << endl;
 	cout << "\t\t 1. Area " << endl;
@@ -43,8 +49,9 @@ void unitCategories()
 	cout << endl;
 	noOfCategories = 11;
 }
-void unitCategoriesCorrespondence(int unitCategory)
+void showCategory(int unitCategory)
 {
+	setColor(14);
 	switch (unitCategory)
 	{
 	case 1: cout << "\t \t \t \t CATEGORY: AREA " << endl; break;
@@ -59,6 +66,10 @@ void unitCategoriesCorrespondence(int unitCategory)
 	case 10: cout << "\t \t \t \t CATEGORY: SPEED " << endl; break;
 	case 11: cout << "\t \t \t \t CATEGORY: FUEL CONSUMPTION " << endl; break;
 	}
+}
+void readUnitCategory()
+{
+	cin >> unitCategory;
 }
 void isCategoryInsideBounds(int unitCategory)
 {
@@ -138,39 +149,55 @@ void buildRestOfMatrix(matrix &oneMatrix, double inputValue)
 	{
 		for (int j = i + 1; j < MAX_ARRAY_LENGTH; j++)
 		{
-			oneMatrix.values[i][j] = oneMatrix.values[0][j] * oneMatrix.values[i][0];
+			oneMatrix.values[i][j] = oneMatrix.values[0][j] * oneMatrix.values[i][0] / inputValue;
 		}
 		for (int k = i - 1; k >= 0; k--)
 		{
-			oneMatrix.values[i][k] = oneMatrix.values[0][k] * oneMatrix.values[i][0];
+			oneMatrix.values[i][k] = oneMatrix.values[0][k] * oneMatrix.values[i][0] / inputValue;
 		}
 	}
 }
-////////////////////////////////////////
-void numberOfOptionsinEachCategory(int unitCategory)
+
+void numberOfOptionsinEachCategory(int theChosenCategory)
 {
-	int noOfOptions;
-	switch (unitCategory) 
+	switch (theChosenCategory)
 	{
-	case 1: noOfOptions = 11; break;
-	case 2: noOfOptions = 11; break;
-	case 3: noOfOptions = 11; break;
-	case 4: noOfOptions = 11; break;
-	case 5: noOfOptions = 11; break;
-	case 6: noOfOptions = 11; break;
-	case 7: noOfOptions = 11; break;
-	case 8: noOfOptions = 11; break;
-	case 9: noOfOptions = 11; break;
-	case 10: noOfOptions = 11; break;
-	case 11: noOfOptions = 11; break;
+	case 1: noOfOptionsInTheCategory = 11; break;
+	case 2: noOfOptionsInTheCategory = 12; break;
+	case 3: noOfOptionsInTheCategory = 12; break;
+	case 4: noOfOptionsInTheCategory = 12; break;
+	case 5: noOfOptionsInTheCategory = 3; break; //temp
+	case 6: noOfOptionsInTheCategory = 6; break;
+	case 7: noOfOptionsInTheCategory = 10; break;
+	case 8: noOfOptionsInTheCategory = 8; break;
+	case 9: noOfOptionsInTheCategory = 19; break;
+	case 10: noOfOptionsInTheCategory = 10; break;
+	case 11: noOfOptionsInTheCategory = 8; break;
 	}
 }
+
+
+void printConversionTable(matrix &oneMatrix)
+{
+	cout << endl;
+	for (int i = 0; i < noOfOptionsInTheCategory; i++)
+	{
+		for (int j = 0; j < noOfOptionsInTheCategory; j++)
+		{
+			cout << oneMatrix.values[i][j] << " / ";
+		}
+		cout << endl;
+	}
+	cout << endl;
+}
+
 
 //user input
 double readInputValue()
 {
 	double inputValue;
-	cout << "Number of units to convert: ";
+	cout << endl;
+	cout << "  Number of units to convert: ";
 	cin >> inputValue;
 	return inputValue;
 }
@@ -178,27 +205,31 @@ int readInputUnit()
 {
 	int inputUnit;
 	bool validInputUnit;
-	cout << "Convert from (please type in the number corresponding to your option): ";
+	cout << endl;
+	numberOfOptionsinEachCategory(unitCategory);
+	cout << "  Convert from (please enter the number corresponding to your option): ";
 	do {
 		validInputUnit = true;
 		cin >> inputUnit;
-		if (inputUnit<1 || inputUnit>noOfOptions)
+		if (inputUnit<0 || inputUnit>noOfOptionsInTheCategory)
 		{
 			showError();
 			validInputUnit = false;
 		}
-	} while (validInputUnit == false);
+	} while (validInputUnit == false); 
 	return inputUnit;
 }
 int readOutputUnit()
 {
 	int outputUnit;
+	cout << endl;
+	cout << "  Convert to (please type in the number corresponding to your option): ";
+	numberOfOptionsinEachCategory(unitCategory);
 	bool validOutputUnit;
-	cout << "Convert to (please type in the number corresponding to your option): ";
 	do {
 		validOutputUnit = true;
 		cin >> outputUnit;
-		if (outputUnit<1 || outputUnit>noOfOptions)
+		if (outputUnit<1 || outputUnit>noOfOptionsInTheCategory)
 		{
 			showError();
 			validOutputUnit = false;
@@ -206,39 +237,25 @@ int readOutputUnit()
 	} while (validOutputUnit == false);
 	return outputUnit;
 }
-char readInputUnitLetter()
-{
-	char inputUnitLetter;
-	cout << "units from (please type in the letter corresponding to your option): ";
-	cin >> inputUnitLetter;
-	return inputUnitLetter;
-}
-char readOutputUnitLetter()
-{
-	char outputUnitLetter;
-	cout << "to (please type in the letter corresponding to your option): ";
-	cin >> outputUnitLetter;
-	return outputUnitLetter;
-}
 
 
-//1 AREA - done
+//1 AREA 
 void displayAreaOptions()
 {
-	//noUnitsAreaMetric
-	cout << "1. square kilometers " << endl;
-	cout << "2. square hectometers " << endl;
-	cout << "3. square decameters " << endl;
-	cout << "4. square meters " << endl;
-	cout << "5. square decimeters " << endl;
-	cout << "6. square centimeters " << endl;
-	cout << "7. square milimeters " << endl;
-	//Special Units
-	cout << "8. square inches " << endl;
-	cout << "9. square feet " << endl;
-	cout << "10. square miles " << endl;
-	cout << "11. hectares " << endl;
+	setColor(2);
+	cout << "\t\t 1. square kilometers " << endl;
+	cout << "\t\t 2. square hectometers " << endl;
+	cout << "\t\t 3. square decameters " << endl;
+	cout << "\t\t 4. square meters " << endl;
+	cout << "\t\t 5. square decimeters " << endl;
+	cout << "\t\t 6. square centimeters " << endl;
+	cout << "\t\t 7. square milimeters " << endl;
 	noUnitsAreaMetric = 7;
+	cout << "\t\t 8. square inches " << endl;
+	cout << "\t\t 9. square feet " << endl;
+	cout << "\t\t 10. square miles " << endl;
+	cout << "\t\t 11. hectares " << endl;
+	cout << "\t\t\t\t ~~ press 0 to go to the main menu ~~ " << endl;
 	noOfAreaOptions = 11;
 }
 void areaInputUnitCorespondence(int inputUnit)
@@ -275,16 +292,28 @@ void areaOutputUnitCorespondence(int outputUnit)
 	case 11: cout << "hectares"; break;
 	}
 }
+
+void buildAreaConvTableMetric(vector &ConvTable, int inputIndex, double inputValue)
+{
+	int i;
+	for (i = 0; i < noUnitsAreaMetric; i++)
+	{
+		if (i < inputIndex)
+		{
+			ConvTable.values[i] = inputValue / pow(pow(10, inputIndex - i), 2);
+		}
+		if (i > inputIndex)
+		{
+			ConvTable.values[i] = inputValue * pow(pow(10, i - inputIndex), 2);
+		}
+	}
+}
 double areaConversion(int inputUnit, int outputUnit, double inputValue)
 {
 	vector areaConversionTable;
 	int i, inputIndex, outputIndex;
 	double valueInSquareMeters, valueInSquareKm;
-
-	for (int k = 0; k < MAX_ARRAY_LENGTH; k++)
-	{
-		areaConversionTable.values[k] = 0;
-	}
+	arrayInitialization(areaConversionTable);
 
 	inputIndex = determineInputIndex(inputUnit);
 	outputIndex = determineOutputIndex(outputUnit);
@@ -292,17 +321,7 @@ double areaConversion(int inputUnit, int outputUnit, double inputValue)
 
 	if (inputIndex < noUnitsAreaMetric)
 	{
-		for (i = 0; i < noUnitsAreaMetric; i++)
-		{
-			if (i < inputIndex)
-			{
-				areaConversionTable.values[i] = inputValue / pow(pow(10, inputIndex - i), 2);
-			}
-			if (i > inputIndex)
-			{
-				areaConversionTable.values[i] = inputValue * pow(pow(10, i - inputIndex), 2);
-			}
-		}
+		buildAreaConvTableMetric(areaConversionTable, inputIndex, inputValue);
 		valueInSquareMeters = areaConversionTable.values[3];
 		valueInSquareKm = areaConversionTable.values[0];
 		//  to square inches, feet, miles, hectares
@@ -326,7 +345,7 @@ double areaConversion(int inputUnit, int outputUnit, double inputValue)
 				}
 		case 10: areaConversionTable.values[3] = inputValue / oneSquareMeterInHectares; break;
 		}
-		for (i = 0; i < 7; i++)
+		for (i = 0; i < noUnitsAreaMetric; i++)
 		{
 			if (i < 3)
 			{
@@ -348,22 +367,23 @@ double areaConversion(int inputUnit, int outputUnit, double inputValue)
 	return areaConversionTable.values[outputIndex];
 }
 
-//2. LENGTH - done
+//2. LENGTH 
 void displayLengthOptions()
-{   //noUnitsLengthMetric
-	cout << "1. km (kilometers) " << endl;
-	cout << "2. hm (hectometers)" << endl;
-	cout << "3. dam (decameters) " << endl;
-	cout << "4. m (meters) " << endl;
-	cout << "5. dm (decimeters) " << endl;
-	cout << "6. cm (centimeters) " << endl;
-	cout << "7. mm (milimeters) " << endl;
-	//special units
-	cout << "8. in (inches) " << endl;
-	cout << "9. ft (feet) " << endl;
-	cout << "10. mi (miles) " << endl;
-	cout << "11. yd (yards) " << endl;
-	cout << "12. nmi (nautical mile) " << endl;
+{
+	setColor(2);
+	cout << "\t\t 1. km (kilometers) " << endl; //metric
+	cout << "\t\t 2. hm (hectometers)" << endl;
+	cout << "\t\t 3. dam (decameters) " << endl;
+	cout << "\t\t 4. m (meters) " << endl;
+	cout << "\t\t 5. dm (decimeters) " << endl;
+	cout << "\t\t 6. cm (centimeters) " << endl;
+	cout << "\t\t 7. mm (milimeters) " << endl;
+	cout << "\t\t 8. in (inches) " << endl; //special units
+	cout << "\t\t 9. ft (feet) " << endl;
+	cout << "\t\t 10. mi (miles) " << endl;
+	cout << "\t\t 11. yd (yards) " << endl;
+	cout << "\t\t 12. nmi (nautical mile) " << endl;
+	cout << "\t\t\t ~~press 0 to go to the previous screen~~ " << endl;
 	noOfLengthOptions = 12;
 	noUnitsLengthMetric = 7;
 
@@ -476,21 +496,23 @@ double lengthConversion(int inputUnit, int outputUnit, double inputValue)
 	return lengthConversionTable.values[outputIndex];
 }
 
-//3. VOLUME - done
+//3. VOLUME 
 void displayVolumeOptions()
 {
-	cout << "1. l (litres) " << endl;
-	cout << "2. dl (decilitres) " << endl;
-	cout << "3. cl (centilitres) " << endl;
-	cout << "4. ml (mililitres) " << endl;
-	cout << "5. cubic meters " << endl;
-	cout << "6. cubic decimeters " << endl; 
-	cout << "7. cubic centimeters " << endl;
-	cout << "8. gallons (US) " << endl;
-	cout << "9. gallons (UK) " << endl;
-	cout << "10. cubic ft " << endl;
-	cout << "11. cubic in (inches) " << endl;
-	cout << "12. cubic yd (yards) " << endl;
+	setColor(2);
+	cout << "\t\t 1. l (litres) " << endl;
+	cout << "\t\t 2. dl (decilitres) " << endl;
+	cout << "\t\t 3. cl (centilitres) " << endl;
+	cout << "\t\t 4. ml (mililitres) " << endl;
+	cout << "\t\t 5. cubic meters " << endl;
+	cout << "\t\t 6. cubic decimeters " << endl; 
+	cout << "\t\t 7. cubic centimeters " << endl;
+	cout << "\t\t 8. gallons (US) " << endl;
+	cout << "\t\t 9. gallons (UK) " << endl;
+	cout << "\t\t 10. cubic ft " << endl;
+	cout << "\t\t 11. cubic in (inches) " << endl;
+	cout << "\t\t 12. cubic yd (yards) " << endl;
+	cout << "\t\t\t ~~press 0 to go to the previous screen~~ " << endl;
 }
 void volumeInputUnitCorespondence(int inputUnit)
 {
@@ -704,21 +726,23 @@ double volumeConversion(int inputUnit, int outputUnit, double inputValue)
 	}
 }
 
-//4. TIME - nu merge
+//4. TIME 
 void displayTimeOptions()
 {
-	cout << "1. century " << endl; 	//largeUnits
-	cout << "2. decade " << endl;
-	cout << "3. year " << endl; 
-	cout << "4. month " << endl;
-	cout << "5. week (1 month = 4 weeks) " << endl;
-	cout << "6. day " << endl; // middleUnits
-	cout << "7. hour " << endl;
-	cout << "8. minute " << endl; 
-	cout << "9. second " << endl; //smallUnits
-	cout << "10. milisecond " << endl;
-	cout << "11. microsecond " << endl; 
-	cout << "12. nanosecond " << endl; 
+	setColor(2);
+	cout << "\t\t 1. century " << endl; 	//largeUnits
+	cout << "\t\t 2. decade " << endl;
+	cout << "\t\t 3. year " << endl; 
+	cout << "\t\t 4. month " << endl;
+	cout << "\t\t 5. week (1 month = 4 weeks) " << endl;
+	cout << "\t\t 6. day " << endl; // middleUnits
+	cout << "\t\t 7. hour " << endl;
+	cout << "\t\t 8. minute " << endl; 
+	cout << "\t\t 9. second " << endl; //smallUnits
+	cout << "\t\t 10. milisecond " << endl;
+	cout << "\t\t 11. microsecond " << endl; 
+	cout << "\t\t 12. nanosecond " << endl; 
+	cout << "\t\t\t ~~press 0 to go to the previous screen~~ " << endl;
 	noTimeOptions = 12;
 }
 void timeInputUnitCorespondence(int inputUnit)
@@ -853,88 +877,93 @@ double timeConversion(int inputUnit, int outputUnit, double inputValue)
 	}
 }
 
-//5 TEMPERATURE -done
+//5 TEMPERATURE 
 void displayTemperatureOptions()
 {
-	cout << "C. Celsius " << endl;
-	cout << "F. Fahrenheit " << endl;
-	cout << "K. Kelvin " << endl;
+	setColor(2);
+	cout << "\t\t 1. Celsius " << endl;
+	cout << "\t\t 2. Fahrenheit " << endl;
+	cout << "\t\t 3. Kelvin " << endl;
+	cout << "\t\t\t ~~press 0 to go to the previous screen~~ " << endl;
 }
-void temperatureInputUnitCorespondence(char inputUnit)
+void temperatureInputUnitCorespondence(int inputUnit)
 {
-	if (inputUnit == 'C' || inputUnit == 'c')
+	switch (inputUnit)
 	{
-		cout << " ° Celsius ";
-	}
-	if (inputUnit == 'F' || inputUnit == 'f')
-	{
-		cout << " ° Fahrenheit ";
-	}
-	if (inputUnit == 'K' || inputUnit == 'k')
-	{
-		cout << " ° Kelvin ";
+	case 1: cout << "degrees Celsius"; break;
+	case 2: cout << "degrees Fahrenheit"; break;
+	case 3: cout << "degrees Kelvin"; break;
 	}
 }
 void temperatureOutputUnitCorespondence(int outputUnit)
 {
-	if (outputUnit == 'C' || outputUnit == 'c')
+	switch (outputUnit)
 	{
-		cout << " ° Celsius ";
+	case 1: cout << "degrees Celsius"; break;
+	case 2: cout << "degrees Fahrenheit"; break;
+	case 3: cout << "degrees Kelvin"; break;
 	}
-	if (outputUnit == 'F' || outputUnit == 'f')
-	{
-		cout << " ° Fahrenheit ";
-	}
-	if (outputUnit == 'K' || outputUnit == 'k')
-	
-		cout << " ° Kelvin ";
-	}
-double temperatureConversion(char inputUnitTemperature, char outputUnitTemperature, double inputValue)
+}
+double temperatureConversion(int inputUnit, int outputUnit, double inputValue)
 {
-	if (inputUnitTemperature == 'C' || inputUnitTemperature == 'c')
+	if (inputUnit == 1)
 	{
-		if (outputUnitTemperature == 'K' || outputUnitTemperature == 'k')
+		if (outputUnit == 3)
 		{
-			return inputValue + CtoK;
+			return inputValue + 273.15;
 		}
-		if (outputUnitTemperature == 'F' || outputUnitTemperature == 'f')
+		if (outputUnit == 2)
 		{
 			return (inputValue * 9 / 5 + 32);
 		}		
-	}
-	if (inputUnitTemperature == 'K' || inputUnitTemperature == 'k')
-	{
-		if (outputUnitTemperature == 'C' || outputUnitTemperature == 'c')
+		if (outputUnit == 1)
 		{
-			return inputValue - CtoK;
-		}
-		if (outputUnitTemperature == 'F' || outputUnitTemperature == 'f')
-		{
-			return (inputValue * 9 / 5 - 459, 67);
+			return inputValue;
 		}
 	}
-	if (inputUnitTemperature == 'F' || inputUnitTemperature == 'f')
+	if (inputUnit == 3)
 	{
-		if (outputUnitTemperature == 'C' || outputUnitTemperature == 'c')
+		if (outputUnit == 1)
+		{
+			return inputValue - 273.15;
+		}
+		if (outputUnit == 2)
+		{
+			return (inputValue - 273.15) * 9 / 5 + 32;
+		}
+		if (outputUnit == 3)
+		{
+			return inputValue;
+		}
+	}
+	if (inputUnit == 2)
+	{
+		if (outputUnit == 1)
 		{
 			return ((inputValue - 32) * 5 / 9);
 		}
-		if (outputUnitTemperature == 'K' || outputUnitTemperature == 'k')
+		if (outputUnit == 3)
 		{
-			return ((inputValue + 459, 67) * 5 / 9);
+			return (inputValue - 32) * 5 / 9 + 273.15;
+		}
+		if (outputUnit == 2)
+		{
+			return inputValue;
 		}
 	}
 }
 
-//6.MASS - done
+//6.MASS 
 void displayMassOptions()
 {
-	cout << "1. t (ton) " << endl;
-	cout << "2. kg " << endl;
-	cout << "3. g " << endl;
-	cout << "4. mg " << endl;
-	cout << "5. lb (pound) " << endl;
-	cout << "6. oz (ounce) " << endl;
+	setColor(2);
+	cout << "\t\t 1. t (ton) " << endl;
+	cout << "\t\t 2. kg " << endl;
+	cout << "\t\t 3. g " << endl;
+	cout << "\t\t 4. mg " << endl;
+	cout << "\t\t 5. lb (pound) " << endl;
+	cout << "\t\t 6. oz (ounce) " << endl;
+	cout << "\t\t\t ~~press 0 to go to the previous screen~~ " << endl;
 	noUnitsMassMetric = 4;
 	noUnitsMassSpecial = 2;
 }
@@ -1020,19 +1049,21 @@ double massConversion(int inputUnit, int outputUnit, double inputValue)
 }
 
 
-//7. ENERGY - done
+//7. ENERGY 
 void displayEnergyOptions()
 {
-	cout << "1. J " << endl;
-	cout << "2. kJ " << endl;
-	cout << "3. gcal (gram calorie) " << endl;
-	cout << "4. Kcal " << endl;
-	cout << "5. Gcal " << endl;
-	cout << "6. Watt hour" << endl;
-	cout << "7. Kilowatt hour" << endl;
-	cout << "8. British thermal unit " << endl;
-	cout << "9. US Therm Units " << endl;
-	cout << "10. Foot pound " << endl;
+	setColor(2);
+	cout << "\t\t 1. J " << endl;
+	cout << "\t\t 2. kJ " << endl;
+	cout << "\t\t 3. gcal (gram calorie) " << endl;
+	cout << "\t\t 4. Kcal " << endl;
+	cout << "\t\t 5. Gcal " << endl;
+	cout << "\t\t 6. Watt hour" << endl;
+	cout << "\t\t 7. Kilowatt hour" << endl;
+	cout << "\t\t 8. British thermal unit " << endl;
+	cout << "\t\t 9. US Therm Units " << endl;
+	cout << "\t\t 10. Foot pound " << endl;
+	cout << "\t\t\t ~~press 0 to go to the previous screen~~ " << endl;
 }
 void energyInputUnitCorespondence(int inputUnit)
 {
@@ -1079,7 +1110,7 @@ void buildEnergyConversionTable(matrix &oneMatrix, double inputValue)
 		fin >> conversionFactor;
 		oneMatrix.values[i][0] = conversionFactor * inputValue; // prima col
 		oneMatrix.values[i][i] = inputValue; //diag princ
-		oneMatrix.values[0][i] = inputValue / oneMatrix.values[i][0]; // prima linie
+		oneMatrix.values[0][i] = inputValue / conversionFactor; // prima linie
 	}
 	fin.close();
 	buildRestOfMatrix(oneMatrix, inputValue);
@@ -1088,20 +1119,23 @@ double energyConversion(int inputUnit, int outputUnit, double inputValue)
 {
 	matrix energyConversionTable;
 	buildEnergyConversionTable(energyConversionTable, inputValue);
+	printMatrix(energyConversionTable);
 	return energyConversionTable.values[inputUnit - 1][outputUnit - 1];
 }
 
-// 8. PRESSURE - done
+// 8. PRESSURE 
 void displayPressureOptions()
 {
-	cout << "1. atm (atmosphere) " << endl;
-	cout << "2. bar " << endl;
-	cout << "3. Pascal " << endl;
-	cout << "4. Pound-force per square inch (PSI) " << endl;
-	cout << "5. Torr " << endl;
-	cout << "6. N/mm2 " << endl;
-	cout << "7. mmHg " << endl;
-	cout << "8. mmH2O " << endl;
+	setColor(2);
+	cout << "\t\t 1. atm (atmosphere) " << endl;
+	cout << "\t\t 2. bar " << endl;
+	cout << "\t\t 3. Pascal " << endl;
+	cout << "\t\t 4. Pound-force per square inch (PSI) " << endl;
+	cout << "\t\t 5. Torr " << endl;
+	cout << "\t\t 6. N/mm2 " << endl;
+	cout << "\t\t 7. mmHg " << endl;
+	cout << "\t\t 8. mmH2O " << endl;
+	cout << "\t\t\t ~~press 0 to go to the previous screen~~ " << endl;
 }
 void pressureInputUnitCorespondence(int inputUnit)
 {
@@ -1144,7 +1178,7 @@ void buildPressureConversionTable(matrix &oneMatrix, double inputValue)
 		fin >> conversionFactor;
 		oneMatrix.values[i][0] = conversionFactor * inputValue;
 		oneMatrix.values[i][i] = inputValue; 
-		oneMatrix.values[0][i] = inputValue / oneMatrix.values[i][0];
+		oneMatrix.values[0][i] = inputValue / conversionFactor;
 	}
 	fin.close();
 	buildRestOfMatrix(oneMatrix, inputValue);
@@ -1160,25 +1194,28 @@ double pressureConversion(int inputUnit, int outputUnit, double inputValue)
 //9. DENSITY
 void displayDensityOptions()
 {
-	cout << "1. kg/cm3 " << endl;
-	cout << "2. kg/l " << endl;
-	cout << "3. kg/m3 " << endl;
-	cout << "4. g/cm3 " << endl;
-	cout << "5. g/l " << endl;
-	cout << "6. g/m3 " << endl;
-	cout << "7. g/ml " << endl;
-	cout << "8. g/mm3 " << endl;
-	cout << "9. mg/cm3 " << endl;
-	cout << "10. mg/l " << endl;
-	cout << "11. mg/m3 " << endl;
-	cout << "12. lb/gal (US) " << endl;
-	cout << "13. lb/gal (UK) " << endl;
-	cout << "14. lb/ft3 " << endl;
-	cout << "15. lb/in3 " << endl;
-	cout << "16. oz/gal (US) " << endl;
-	cout << "17. oz/gal (UK) " << endl;
-	cout << "18. oz/ft3 " << endl;
-	cout << "19. oz/in3 " << endl;
+	setColor(2);
+	cout << "\t\t 1. kg/cm3 " << endl;
+	cout << "\t\t 2. kg/l " << endl;
+	cout << "\t\t 3. kg/m3 " << endl;
+	cout << "\t\t 4. g/cm3 " << endl;
+	cout << "\t\t 5. g/l " << endl;
+	cout << "\t\t 6. g/m3 " << endl;
+	cout << "\t\t 7. g/ml " << endl;
+	cout << "\t\t 8. g/mm3 " << endl;
+	cout << "\t\t 9. mg/cm3 " << endl;
+	cout << "\t\t 10. mg/l " << endl;
+	cout << "\t\t 11. mg/m3 " << endl;
+	cout << "\t\t 12. lb/gal (US) " << endl;
+	cout << "\t\t 13. lb/gal (UK) " << endl;
+	cout << "\t\t 14. lb/ft3 " << endl;
+	cout << "\t\t 15. lb/in3 " << endl;
+	cout << "\t\t 16. oz/gal (US) " << endl;
+	cout << "\t\t 17. oz/gal (UK) " << endl;
+	cout << "\t\t 18. oz/ft3 " << endl;
+	cout << "\t\t 19. oz/in3 " << endl;
+	cout << "\t\t 20. Print the entire density conversion table " << endl;
+	cout << "\t\t\t ~~press 0 to go to the previous screen~~ " << endl;
 }
 void densityInputUnitCorespondence(int inputUnit)
 {
@@ -1243,7 +1280,7 @@ void buildDensityConversionTable(matrix &oneMatrix, double inputValue)
 		fin >> conversionFactor;
 		oneMatrix.values[i][0] = conversionFactor * inputValue;
 		oneMatrix.values[i][i] = inputValue;
-		oneMatrix.values[0][i] = inputValue / oneMatrix.values[i][0];
+		oneMatrix.values[0][i] = inputValue / conversionFactor;
 	}
 	fin.close();
 	buildRestOfMatrix(oneMatrix, inputValue);
@@ -1259,11 +1296,13 @@ double densityConversion(int inputUnit, int outputUnit, double inputValue)
 //10.SPEED
 void displaySpeedOptions()
 {
-	cout << "Metric units: " << "\t\t\t" << "Imperial units: " << "\t\t\t\t\t" << " For joggers: " << endl;
-	cout << "1. km/h " << "\t\t\t" << " 5. mps (miles per second)" << "\t\t\t\t" << "9. min/km " << endl;
-	cout << "2. km/s " << "\t\t\t" << " 6. mph (miles per hour)" << "\t\t\t\t" << " 10. s/100m " << endl;
+	setColor(2);
+	cout << "Metric units: " << "\t\t\t" << "Imperial units: " << endl;
+	cout << "1. km/h " << "\t\t\t" << " 5. mps (miles per second)" << endl;
+	cout << "2. km/s " << "\t\t\t" << " 6. mph (miles per hour)" << endl;
 	cout << "3. m/s " << "\t\t\t\t" << "  7. fps (feet per second)" << endl;
 	cout << "4. m/min " << "\t\t\t" << "8. fpm (feet per minute)" << endl;
+	cout << "\t\t\t ~~press 0 to go to the previous screen~~ " << endl;
 }
 void speedInputUnitCorespondence(int inputUnit)
 {
@@ -1277,8 +1316,6 @@ void speedInputUnitCorespondence(int inputUnit)
 	case 6: cout << " mph " << endl; break;
 	case 7: cout << " feet/s " << endl; break;
 	case 8: cout << " feet/min " << endl; break;
-	case 9: cout << " min/km " << endl; break;
-	case 10: cout << "s/100m " << endl; break;
 	}
 }
 void speedOutputUnitCorespondence(int outputUnit)
@@ -1293,8 +1330,6 @@ void speedOutputUnitCorespondence(int outputUnit)
 	case 6: cout << " mph " << endl; break;
 	case 7: cout << " feet/s " << endl; break;
 	case 8: cout << " feet/min " << endl; break;
-	case 9: cout << " min/km " << endl; break;
-	case 10: cout << "s/100m " << endl; break;
 	}
 }
 void buildSpeedConversionTable(matrix &aMatrix, double inputValue)
@@ -1309,7 +1344,7 @@ void buildSpeedConversionTable(matrix &aMatrix, double inputValue)
 		fin >> conversionFactor;
 		aMatrix.values[i][0] = conversionFactor * inputValue;
 		aMatrix.values[i][i] = inputValue;
-		aMatrix.values[0][i] = inputValue / aMatrix.values[i][0];
+		aMatrix.values[0][i] = inputValue / conversionFactor;
 	}
 	fin.close();
 	buildRestOfMatrix(aMatrix, inputValue);
@@ -1325,17 +1360,17 @@ double speedConversion(int inputUnit, int outputUnit, double inputValue)
 
 //11. FUEL CONSUMPTION
 void displayFuelOptions()
-{//metric
-	cout << "1. l/100km " << endl;
-	cout << "2. km/l " << endl;
-	//us
-	cout << "3. mpg (miles per gallon- US) " << endl;
-	cout << "4. gal(US)/100 mi " << endl;
-	//uk
-	cout << "5. mpg (miles per gallon - UK) " << endl;
-	cout << "6. gal(UK)/100 mi " << endl;
-	cout << "7. mi/l " << endl;
-	cout << "8. l/100mi " << endl;
+{
+	setColor(2);
+	cout << "\t\t\t ~~press 0 to go to the previous screen~~ " << endl; //metric
+	cout << "\t\t 1. l/100km " << endl;
+	cout << "\t\t 2. km/l " << endl;
+	cout << "\t\t 3. mpg (miles per gallon- US) " << endl; //us
+	cout << "\t\t 4. gal(US)/100 mi " << endl;
+	cout << "\t\t 5. mpg (miles per gallon - UK) " << endl; //uk
+	cout << "\t\t 6. gal(UK)/100 mi " << endl;
+	cout << "\t\t 7. mi/l " << endl;
+	cout << "\t\t 8. l/100mi " << endl;
 }
 void fuelInputUnitCorespondence(int inputUnit)
 {
@@ -1377,7 +1412,7 @@ void buildFuelConversionTable(matrix &aMatrix, double inputValue)
 		fin >> conversionFactor;
 		aMatrix.values[i][0] = conversionFactor * inputValue;
 		aMatrix.values[i][i] = inputValue;
-		aMatrix.values[0][i] = inputValue / aMatrix.values[i][0];
+		aMatrix.values[0][i] = inputValue / conversionFactor;
 	}
 	fin.close();
 	buildRestOfMatrix(aMatrix, inputValue);
@@ -1393,28 +1428,34 @@ int main()
 {
 	char userAnswer;
 	bool continueOrStop=0;
-	int unitCategory, inputUnit, outputUnit;
+	int inputUnit, outputUnit;
 	double inputValue;
-	char inputUnitTemperature, outputUnitTemperature;
 
+MAIN_MENU: 
 	intro();
 	do
 	{
 		cout << endl;
-		unitCategories();
-		cin >> unitCategory;
+		showUnitCategories();
+		readUnitCategory();
 		isCategoryInsideBounds(unitCategory);
 
 		//area
 		if (unitCategory == 1)
 		{
-			unitCategoriesCorrespondence(unitCategory);
+			showCategory(unitCategory);
 			displayAreaOptions();
 			inputUnit = readInputUnit(); 
+			if (inputUnit == 0)
+			{
+				system("CLS");
+				goto MAIN_MENU;
+			}
 			outputUnit = readOutputUnit();
 			inputValue = readInputValue();
 			cout << endl;
-			cout << inputValue;
+			setColor(14);
+			cout << "  " << inputValue;
 			cout << " ";
 			areaInputUnitCorespondence(inputUnit);
 			cout << " is " << areaConversion(inputUnit, outputUnit, inputValue);
@@ -1426,13 +1467,19 @@ int main()
 		//length
 		if (unitCategory == 2)
 		{
-			unitCategoriesCorrespondence(unitCategory);
+			showCategory(unitCategory);
 			displayLengthOptions();
 			inputUnit = readInputUnit();
+			if (inputUnit == 0)
+			{
+				system("CLS");
+				goto MAIN_MENU;
+			}
 			outputUnit = readOutputUnit();
 			inputValue = readInputValue();
 			cout << endl;
-			cout << inputValue;
+			setColor(14);
+			cout << "  " << inputValue;
 			cout << " ";
 			lengthInputUnitCorespondence(inputUnit);
 			cout << " is " << lengthConversion(inputUnit, outputUnit, inputValue);
@@ -1444,13 +1491,19 @@ int main()
 		//volume
 		if (unitCategory == 3)
 		{
-			unitCategoriesCorrespondence(unitCategory);
+			showCategory(unitCategory);
 			displayVolumeOptions();
 			inputUnit = readInputUnit();
+			if (inputUnit == 0)
+			{
+				system("CLS");
+				goto MAIN_MENU;
+			}
 			outputUnit = readOutputUnit();
 			inputValue = readInputValue();
 			cout << endl;
-			cout << inputValue;
+			setColor(14);
+			cout << "  " << inputValue;
 			cout << " ";
 			volumeInputUnitCorespondence(inputUnit);
 			cout << " is " << volumeConversion(inputUnit, outputUnit, inputValue);
@@ -1462,13 +1515,19 @@ int main()
 		//time
 		if (unitCategory == 4)
 		{
-			unitCategoriesCorrespondence(unitCategory);
+			showCategory(unitCategory);
 			displayTimeOptions();
 			inputUnit = readInputUnit();
+			if (inputUnit == 0)
+			{
+				system("CLS");
+				goto MAIN_MENU;
+			}
 			outputUnit = readOutputUnit();
 			inputValue = readInputValue();
 			cout << endl;
-			cout << inputValue;
+			setColor(14);
+			cout << "  " << inputValue;
 			cout << " ";
 			timeInputUnitCorespondence(inputUnit);
 			cout << " is " << timeConversion(inputUnit, outputUnit, inputValue);
@@ -1480,13 +1539,19 @@ int main()
 		//temperature
 		if (unitCategory == 5) 
 		{
-			unitCategoriesCorrespondence(unitCategory);
+			showCategory(unitCategory);
 			displayTemperatureOptions();
-			inputUnitTemperature = readInputUnitLetter();
-			outputUnitTemperature = readOutputUnitLetter();
+			inputUnit = readInputUnit();
+			if (inputUnit == 0)
+			{
+				system("CLS");
+				goto MAIN_MENU;
+			}
+			outputUnit = readOutputUnit();
 			inputValue = readInputValue();
 			cout << endl;
-			cout << inputValue;
+			setColor(14);
+			cout << "  " << inputValue;
 			cout << " ";
 			temperatureInputUnitCorespondence(inputUnit);
 			cout << " is " << temperatureConversion(inputUnit, outputUnit, inputValue);
@@ -1498,13 +1563,19 @@ int main()
 		//mass
 		if (unitCategory == 6)
 		{
-			unitCategoriesCorrespondence(unitCategory);
+			showCategory(unitCategory);
 			displayMassOptions();
 			inputUnit = readInputUnit();
+			if (inputUnit == 0)
+			{
+				system("CLS");
+				goto MAIN_MENU;
+			}
 			outputUnit = readOutputUnit();
 			inputValue = readInputValue();
 			cout << endl;
-			cout << inputValue;
+			setColor(14);
+			cout << "  " << inputValue;
 			cout << " ";
 			massInputUnitCorespondence(inputUnit);
 			cout << " is " << massConversion(inputUnit, outputUnit, inputValue);
@@ -1516,13 +1587,19 @@ int main()
 		//energy
 		if (unitCategory == 7)
 		{
-			unitCategoriesCorrespondence(unitCategory);
+			showCategory(unitCategory);
 			displayEnergyOptions();
 			inputUnit = readInputUnit();
+			if (inputUnit == 0)
+			{
+				system("CLS");
+				goto MAIN_MENU;
+			}
 			outputUnit = readOutputUnit();
 			inputValue = readInputValue();
 			cout << endl;
-			cout << inputValue;
+			setColor(14);
+			cout << "  " << inputValue;
 			cout << " ";
 			energyInputUnitCorespondence(inputUnit);
 			cout << " is " << energyConversion(inputUnit, outputUnit, inputValue);
@@ -1534,13 +1611,19 @@ int main()
 		//pressure
 		if (unitCategory == 8)
 		{
-			unitCategoriesCorrespondence(unitCategory);
+			showCategory(unitCategory);
 			displayPressureOptions();
 			inputUnit = readInputUnit();
+			if (inputUnit == 0)
+			{
+				system("CLS");
+				goto MAIN_MENU;
+			}
 			outputUnit = readOutputUnit();
 			inputValue = readInputValue();
 			cout << endl;
-			cout << inputValue;
+			setColor(14);
+			cout << "  " << inputValue;
 			cout << " ";
 			pressureInputUnitCorespondence(inputUnit);
 			cout << " is " << pressureConversion(inputUnit, outputUnit, inputValue);
@@ -1553,13 +1636,25 @@ int main()
 		//density
 		if (unitCategory == 9)
 		{
-			unitCategoriesCorrespondence(unitCategory);
+			showCategory(unitCategory);
 			displayDensityOptions();
 			inputUnit = readInputUnit();
+			if (inputUnit == 0)
+			{
+				system("CLS");
+				goto MAIN_MENU;
+			}
+			/*
+			if (inputUnit == 20)
+			{
+				printConversionTable() ///////////////
+			}
+			*/
 			outputUnit = readOutputUnit();
 			inputValue = readInputValue();
 			cout << endl;
-			cout << inputValue;
+			setColor(14);
+			cout << "  " << inputValue;
 			cout << " ";
 			densityInputUnitCorespondence(inputUnit);
 			cout << " is " << densityConversion(inputUnit, outputUnit, inputValue);
@@ -1571,14 +1666,20 @@ int main()
 		//speed
 		if (unitCategory == 10)
 		{
-			unitCategoriesCorrespondence(unitCategory);
+			showCategory(unitCategory);
 			displaySpeedOptions();
 			cout << endl;
 			inputUnit = readInputUnit();
+			if (inputUnit == 0)
+			{
+				system("CLS");
+				goto MAIN_MENU;
+			}
 			outputUnit = readOutputUnit();
 			inputValue = readInputValue();
 			cout << endl;
-			cout << inputValue << " ";
+			setColor(14);
+			cout << "  " << inputValue << " ";
 			speedInputUnitCorespondence(inputUnit);
 			cout << " is " << speedConversion(inputUnit, outputUnit, inputValue);
 			speedOutputUnitCorespondence(outputUnit);
@@ -1587,13 +1688,19 @@ int main()
 		//fuel cons
 		if (unitCategory == 11)
 		{
-			unitCategoriesCorrespondence(unitCategory);
+			showCategory(unitCategory);
 			displayFuelOptions();
 			inputUnit = readInputUnit();
+			if (inputUnit == 0)
+			{
+				system("CLS");
+				goto MAIN_MENU;
+			}
 			outputUnit = readOutputUnit();
 			inputValue = readInputValue();
 			cout << endl;
-			cout << inputValue;
+			setColor(14);
+			cout << "  " << inputValue;
 			cout << " ";
 			fuelInputUnitCorespondence(inputUnit);
 			cout << " is " << fuelConversion(inputUnit, outputUnit, inputValue);
@@ -1603,14 +1710,17 @@ int main()
 		}
 
 		//continue or exit?
-		cout << " Perform another conversion? (y/n) ";
+		setColor(2);
+		cout << "  Perform another conversion? (y/n) " << endl;
 		cin >> userAnswer;
 		if (userAnswer == 'y' || userAnswer == 'Y')
 		{
+			system("CLS");
 			continueOrStop = 1;
 		}
 		else
 		{
+			setColor(14);
 			cout << " Thank you for using Unit Converter! " << endl << endl;
 			continueOrStop = 0;
 		}
