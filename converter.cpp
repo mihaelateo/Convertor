@@ -46,8 +46,9 @@ void showUnitCategories()
 	cout << "\t\t 9. Density" << endl;
 	cout << "\t\t 10. Speed " << endl;
 	cout << "\t\t 11. Fuel consumption " << endl;
+	cout << "\t\t 12. Exit " << endl;
 	cout << endl;
-	noOfCategories = 11;
+	noOfCategories = 12;
 }
 void showCategory(int unitCategory)
 {
@@ -1440,6 +1441,11 @@ MAIN_MENU:
 		readUnitCategory();
 		isCategoryInsideBounds(unitCategory);
 
+		//exit
+		if (unitCategory == 12)
+		{
+			return 0;
+		}
 		//area
 		if (unitCategory == 1)
 		{
