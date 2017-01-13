@@ -1,0 +1,29 @@
+Proiectul ruleaza un convertor de unitati de masura din urmatoarele categorii:
+1. lungime
+2. arie
+3. volum
+4. timp
+5. viteza
+6. temperatura
+7. masa
+8. energie
+9. presiune
+10. densitate
+11. consum combustibil
+
+Implementare:
+In functie de unitatea de convertit, am ales abordari diferite. Scopul a fost ca aplicatia sa fie cat mai scalabila, astfel încât
+sa se poata adauga noi unitati de convertit cat mai usor. De aceea, nu am ales sa folosesc multiple switch-uri sau if-uri, 
+avand în vedere numarul mare al unitatilor de masura.
+
+Majoritatea unitatilor sunt convertite prin constructia intregului tablou de conversie, implementat fie cu ajutorul unui vector, 
+fie cu ajutorul unei matrici. Cu alte cuvinte, la fiecare rulare, pentru majoritatea unitatilor, programul va construi in spate
+tot tabloul de conversie, bazandu-se pe input-ul dat de utilizator. 
+
+Facilitati:
+- Utilizatorul poate naviga către meniul anterior apsand tasta ‘0’.
+- Programul afiseaza un mesaj de eroare atunci când optiunea introdusa nu este corecta, adică nu se afla intre cele afisate 
+în meniul curent
+
+
+
