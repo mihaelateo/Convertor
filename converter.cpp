@@ -178,21 +178,6 @@ void numberOfOptionsinEachCategory(int theChosenCategory)
 }
 
 
-void printConversionTable(matrix &oneMatrix)
-{
-	cout << endl;
-	for (int i = 0; i < noOfOptionsInTheCategory; i++)
-	{
-		for (int j = 0; j < noOfOptionsInTheCategory; j++)
-		{
-			cout << oneMatrix.values[i][j] << " / ";
-		}
-		cout << endl;
-	}
-	cout << endl;
-}
-
-
 //user input
 double readInputValue()
 {
@@ -1444,6 +1429,8 @@ MAIN_MENU:
 		//exit
 		if (unitCategory == 12)
 		{
+			setColor(14);
+			cout << " Thank you for using Unit Converter! " << endl << endl;
 			return 0;
 		}
 		//area
@@ -1650,12 +1637,6 @@ MAIN_MENU:
 				system("CLS");
 				goto MAIN_MENU;
 			}
-			/*
-			if (inputUnit == 20)
-			{
-				printConversionTable() ///////////////
-			}
-			*/
 			outputUnit = readOutputUnit();
 			inputValue = readInputValue();
 			cout << endl;
