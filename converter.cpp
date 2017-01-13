@@ -1,6 +1,6 @@
 ﻿#include "converter.h"
 
-int noOfCategories, noTimeOptions, noUnitsMassMetric, noUnitsMassSpecial;
+int noOfCategories, noTimeOptions, noUnitsMassMetric, noUnitsMassSpecial, noOfOptions;
 int noOfAreaOptions, noUnitsAreaMetric;
 int noOfLengthOptions, noUnitsLengthMetric;
 
@@ -66,6 +66,10 @@ void isCategoryInsideBounds(int unitCategory)
 	{
 		cout << "Please enter an admissible value! " << endl;
 	}
+}
+void showError()
+{
+	cout << "Please enter an admissible value! " << endl;
 }
 
 int determineInputIndex(int inputUnit)
@@ -142,6 +146,25 @@ void buildRestOfMatrix(matrix &oneMatrix, double inputValue)
 		}
 	}
 }
+////////////////////////////////////////
+void numberOfOptionsinEachCategory(int unitCategory)
+{
+	int noOfOptions;
+	switch (unitCategory) 
+	{
+	case 1: noOfOptions = 11; break;
+	case 2: noOfOptions = 11; break;
+	case 3: noOfOptions = 11; break;
+	case 4: noOfOptions = 11; break;
+	case 5: noOfOptions = 11; break;
+	case 6: noOfOptions = 11; break;
+	case 7: noOfOptions = 11; break;
+	case 8: noOfOptions = 11; break;
+	case 9: noOfOptions = 11; break;
+	case 10: noOfOptions = 11; break;
+	case 11: noOfOptions = 11; break;
+	}
+}
 
 //user input
 double readInputValue()
@@ -154,15 +177,33 @@ double readInputValue()
 int readInputUnit()
 {
 	int inputUnit;
+	bool validInputUnit;
 	cout << "Convert from (please type in the number corresponding to your option): ";
-	cin >> inputUnit;
+	do {
+		validInputUnit = true;
+		cin >> inputUnit;
+		if (inputUnit<1 || inputUnit>noOfOptions)
+		{
+			showError();
+			validInputUnit = false;
+		}
+	} while (validInputUnit == false);
 	return inputUnit;
 }
 int readOutputUnit()
 {
 	int outputUnit;
+	bool validOutputUnit;
 	cout << "Convert to (please type in the number corresponding to your option): ";
-	cin >> outputUnit;
+	do {
+		validOutputUnit = true;
+		cin >> outputUnit;
+		if (outputUnit<1 || outputUnit>noOfOptions)
+		{
+			showError();
+			validOutputUnit = false;
+		}
+	} while (validOutputUnit == false);
 	return outputUnit;
 }
 char readInputUnitLetter()
@@ -663,7 +704,7 @@ double volumeConversion(int inputUnit, int outputUnit, double inputValue)
 	}
 }
 
-//4. TIME - done
+//4. TIME - nu merge
 void displayTimeOptions()
 {
 	cout << "1. century " << endl; 	//largeUnits
@@ -1294,9 +1335,59 @@ void displayFuelOptions()
 	cout << "5. mpg (miles per gallon - UK) " << endl;
 	cout << "6. gal(UK)/100 mi " << endl;
 	cout << "7. mi/l " << endl;
-	cout << "7. l/100mi " << endl;
+	cout << "8. l/100mi " << endl;
 }
-
+void fuelInputUnitCorespondence(int inputUnit)
+{
+	switch (inputUnit)
+	{
+	case 1: cout << " l/100km " << endl; break;
+	case 2: cout << " km/l " << endl; break;
+	case 3: cout << " mpg (miles per gallon- US) " << endl; break;
+	case 4: cout << " gal(US)/100 mi " << endl; break;
+	case 5: cout << " mpg (miles per gallon - UK) " << endl; break;
+	case 6: cout << " gal(UK)/100 mi " << endl; break;
+	case 7: cout << " mi/l " << endl; break;
+	case 8: cout << " l/100mi " << endl; break;
+	}
+}
+void fuelOutputUnitCorespondence(int outputUnit)
+{
+	switch (outputUnit)
+	{
+	case 1: cout << " l/100km " << endl; break;
+	case 2: cout << " km/l " << endl; break;
+	case 3: cout << " mpg (miles per gallon- US) " << endl; break;
+	case 4: cout << " gal(US)/100 mi " << endl; break;
+	case 5: cout << " mpg (miles per gallon - UK) " << endl; break;
+	case 6: cout << " gal(UK)/100 mi " << endl; break;
+	case 7: cout << " mi/l " << endl; break;
+	case 8: cout << " l/100mi " << endl; break;
+	}
+}
+void buildFuelConversionTable(matrix &aMatrix, double inputValue)
+{
+	int i;
+	double conversionFactor;
+	matrixInitialization(aMatrix);
+	ifstream fin("fuelToLPer100Km.in");
+	aMatrix.values[0][0] = inputValue;
+	for (i = 1; (i < MAX_ARRAY_LENGTH && !fin.eof()); i++)
+	{
+		fin >> conversionFactor;
+		aMatrix.values[i][0] = conversionFactor * inputValue;
+		aMatrix.values[i][i] = inputValue;
+		aMatrix.values[0][i] = inputValue / aMatrix.values[i][0];
+	}
+	fin.close();
+	buildRestOfMatrix(aMatrix, inputValue);
+}
+double fuelConversion(int inputUnit, int outputUnit, double inputValue)
+{
+	matrix fuelConversionTable;
+	buildFuelConversionTable(fuelConversionTable, inputValue);
+	return fuelConversionTable.values[inputUnit - 1][outputUnit - 1];
+}
 
 int main()
 {
@@ -1319,7 +1410,7 @@ int main()
 		{
 			unitCategoriesCorrespondence(unitCategory);
 			displayAreaOptions();
-			inputUnit = readInputUnit();
+			inputUnit = readInputUnit(); 
 			outputUnit = readOutputUnit();
 			inputValue = readInputValue();
 			cout << endl;
@@ -1493,7 +1584,6 @@ int main()
 			speedOutputUnitCorespondence(outputUnit);
 			cout << endl;
 		}
-		/*
 		//fuel cons
 		if (unitCategory == 11)
 		{
@@ -1511,7 +1601,6 @@ int main()
 			fuelOutputUnitCorespondence(outputUnit);
 			cout << endl;
 		}
-		*/
 
 		//continue or exit?
 		cout << " Perform another conversion? (y/n) ";
